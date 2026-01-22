@@ -267,3 +267,6 @@ require (
 	sigs.k8s.io/structured-merge-diff/v6 v6.3.1 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
+
+// CVE-2025-52881
+replace github.com/opencontainers/runc => github.com/opencontainers/runc v1.4.0

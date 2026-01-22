@@ -21,23 +21,26 @@ const (
 	NetworkTeratestnet = "teratestnet"
 )
 
-// networkToTopic maps config network names to topic network names.
-var networkToTopic = map[string]string{
-	"main":             NetworkMainnet,
-	NetworkMainnet:     NetworkMainnet,
-	"test":             NetworkTestnet,
-	NetworkTestnet:     NetworkTestnet,
-	NetworkSTN:         NetworkSTN,
-	"teratest":         NetworkTeratestnet,
-	NetworkTeratestnet: NetworkTeratestnet,
+// getNetworkToTopic returns a map from config network names to topic network names.
+func getNetworkToTopic() map[string]string {
+	return map[string]string{
+		"main":             NetworkMainnet,
+		NetworkMainnet:     NetworkMainnet,
+		"test":             NetworkTestnet,
+		NetworkTestnet:     NetworkTestnet,
+		NetworkSTN:         NetworkSTN,
+		"teratest":         NetworkTeratestnet,
+		NetworkTeratestnet: NetworkTeratestnet,
+	}
 }
 
 // TopicName constructs a full topic name for subscribing to Teranode P2P messages.
 // Example: TopicName("main", TopicBlock) returns "teranode/bitcoin/1.0.0/mainnet-block"
 func TopicName(network, topic string) string {
-	if mapped, ok := networkToTopic[network]; ok {
+	if mapped, ok := getNetworkToTopic()[network]; ok {
 		network = mapped
 	}
+
 	return fmt.Sprintf("%s/%s-%s", protocolPrefix, network, topic)
 }
 

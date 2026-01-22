@@ -13,19 +13,22 @@ import (
 	"github.com/spf13/viper"
 )
 
-var defaultBootstrapPeers = map[string][]string{
-	"main": {
-		"/dns4/teranode-eks-mainnet-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWH5JVqGdaw7JEizmysCfRRcPGTFfvRJF7Hkure7oQWYnb",
-		"/dns4/teranode-eks-mainnet-eu-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooW9z2JRV37TqsmU8sDQcSQDZGSgtPpvWUmVegYxYvXfW9H",
-	},
-	"test": {
-		"/dns4/teranode-eks-testnet-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWK7tQiJHKp4TmS632XTXy7nScvVvyL7Qx5YiU65EYnRub",
-		"/dns4/teranode-eks-testnet-eu-2-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWR9DMm622shDLAe5hQZk4phNERF84S77JocXfLyZU9NsF",
-	},
-	"stn": {
-		"/dns4/teranode-eks-ttn-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWFj5nh1m3iAooxnfp5VvDtufYajTpBSopUt7anj4XLqJp",
-		"/dns4/teranode-eks-ttn-eu-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWDnQoDerA2KC8xD5hDqiSp21zf9zS5ezM32wuXgLUaden",
-	},
+// getDefaultBootstrapPeers returns the default bootstrap peers for each network.
+func getDefaultBootstrapPeers() map[string][]string {
+	return map[string][]string{
+		"main": {
+			"/dns4/teranode-eks-mainnet-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWH5JVqGdaw7JEizmysCfRRcPGTFfvRJF7Hkure7oQWYnb",
+			"/dns4/teranode-eks-mainnet-eu-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooW9z2JRV37TqsmU8sDQcSQDZGSgtPpvWUmVegYxYvXfW9H",
+		},
+		"test": {
+			"/dns4/teranode-eks-testnet-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWK7tQiJHKp4TmS632XTXy7nScvVvyL7Qx5YiU65EYnRub",
+			"/dns4/teranode-eks-testnet-eu-2-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWR9DMm622shDLAe5hQZk4phNERF84S77JocXfLyZU9NsF",
+		},
+		"stn": {
+			"/dns4/teranode-eks-ttn-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWFj5nh1m3iAooxnfp5VvDtufYajTpBSopUt7anj4XLqJp",
+			"/dns4/teranode-eks-ttn-eu-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWDnQoDerA2KC8xD5hDqiSp21zf9zS5ezM32wuXgLUaden",
+		},
+	}
 }
 
 // LoadOrGeneratePrivateKey loads a P2P private key from the given storage path,
@@ -33,11 +36,12 @@ var defaultBootstrapPeers = map[string][]string{
 func LoadOrGeneratePrivateKey(storagePath string) (crypto.PrivKey, error) {
 	keyPath := filepath.Join(storagePath, "p2p_key.hex")
 
-	if data, err := os.ReadFile(keyPath); err == nil {
+	if data, err := os.ReadFile(keyPath); err == nil { //nolint:gosec // keyPath is constructed from storagePath
 		privKey, err := msgbus.PrivateKeyFromHex(string(data))
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse private key from %s: %w", keyPath, err)
 		}
+
 		return privKey, nil
 	}
 
@@ -62,6 +66,30 @@ func LoadOrGeneratePrivateKey(storagePath string) (crypto.PrivKey, error) {
 	return privKey, nil
 }
 
+// resolveStoragePath resolves the storage path, expanding ~ and applying defaults.
+func resolveStoragePath(storagePath string) (string, error) {
+	if storagePath == "" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return "./.teranode-p2p", nil //nolint:nilerr // fallback to current dir is intentional
+		}
+
+		return path.Join(homeDir, ".teranode-p2p"), nil
+	}
+
+	if len(storagePath) >= 2 && storagePath[:2] == "~/" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return "", fmt.Errorf("failed to resolve home directory for storage path: %w", err)
+		}
+
+		return path.Join(homeDir, storagePath[2:]), nil
+	}
+
+	return storagePath, nil
+}
+
+// SetDefaults applies default configuration values to the given Viper instance.
 func (c *Config) SetDefaults(v *viper.Viper, configPath string) {
 	prefix := ""
 	if configPath != "" {
@@ -79,43 +107,32 @@ func (c *Config) SetDefaults(v *viper.Viper, configPath string) {
 // Initialize applies defaults for zero-value fields and creates a new Client.
 // Name is required and identifies this client on the P2P network.
 func (c *Config) Initialize(_ context.Context, name string) (*Client, error) {
-	// Apply defaults for zero-value fields
-	if c.StoragePath == "" {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			c.StoragePath = "./.teranode-p2p"
-		} else {
-			c.StoragePath = path.Join(homeDir, ".teranode-p2p")
-		}
-	} else if len(c.StoragePath) >= 2 && c.StoragePath[:2] == "~/" {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return nil, fmt.Errorf("failed to resolve home directory for storage path: %w", err)
-		}
-		c.StoragePath = path.Join(homeDir, c.StoragePath[2:])
+	storagePath, err := resolveStoragePath(c.StoragePath)
+	if err != nil {
+		return nil, err
 	}
 
-	// Apply dependent defaults
+	c.StoragePath = storagePath
+
 	if len(c.MsgBus.BootstrapPeers) == 0 {
-		c.MsgBus.BootstrapPeers = defaultBootstrapPeers[c.Network]
+		c.MsgBus.BootstrapPeers = getDefaultBootstrapPeers()[c.Network]
 	}
+
 	if c.MsgBus.PeerCacheFile == "" {
 		c.MsgBus.PeerCacheFile = filepath.Join(c.StoragePath, "peer_cache.json")
 	}
 
-	// Load or generate private key if not provided
 	if c.MsgBus.PrivateKey == nil {
 		privKey, err := LoadOrGeneratePrivateKey(c.StoragePath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load/generate private key: %w", err)
 		}
+
 		c.MsgBus.PrivateKey = privKey
 	}
 
-	// Apply msgbus defaults
 	c.MsgBus.Name = name
 
-	// Set up slog-based logger (level filtering handled by slog's handler)
 	if c.MsgBus.Logger == nil {
 		c.MsgBus.Logger = NewSlogLogger(nil)
 	}

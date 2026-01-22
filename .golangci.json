@@ -147,6 +147,11 @@
                     "ATTENTION"
                 ]
             },
+            "gomoddirectives": {
+                "replace-allow-list": [
+                    "github.com/opencontainers/runc"
+                ]
+            },
             "govet": {
                 "enable": [
                     "atomicalign",

@@ -1,3 +1,4 @@
+// Package p2p provides a high-level client for connecting to the Teranode P2P network.
 package p2p
 
 import (
@@ -59,21 +60,29 @@ func (c *Client) GetNetwork() string {
 // Close shuts down the P2P client and closes all subscriber channels.
 func (c *Client) Close() error {
 	c.mu.Lock()
+
 	for _, ch := range c.blockSubs {
 		close(ch)
 	}
+
 	c.blockSubs = nil
+
 	for _, ch := range c.subtreeSubs {
 		close(ch)
 	}
+
 	c.subtreeSubs = nil
+
 	for _, ch := range c.rejectedSubs {
 		close(ch)
 	}
+
 	c.rejectedSubs = nil
+
 	for _, ch := range c.statusSubs {
 		close(ch)
 	}
+
 	c.statusSubs = nil
 	c.mu.Unlock()
 
@@ -87,7 +96,7 @@ func (c *Client) GetPeers() []msgbus.PeerInfo {
 
 // SubscribeBlocks subscribes to block announcements.
 // Multiple callers can subscribe; each receives all messages (fan-out).
-// The returned channel is closed when the client is closed or context is cancelled.
+// The returned channel is closed when the client is closed or context is canceled.
 func (c *Client) SubscribeBlocks(ctx context.Context) <-chan teranode.BlockMessage {
 	out := make(chan teranode.BlockMessage, 100)
 
@@ -98,22 +107,30 @@ func (c *Client) SubscribeBlocks(ctx context.Context) <-chan teranode.BlockMessa
 	if !c.blockStarted {
 		c.blockStarted = true
 		topic := TopicName(c.network, TopicBlock)
+
 		rawChan := c.msgbus.Subscribe(topic)
+
 		go c.fanOutBlocks(rawChan, topic)
 	}
+
 	c.mu.Unlock()
 
 	// Handle context cancellation
 	go func() {
 		<-ctx.Done()
+
 		c.mu.Lock()
+
 		for i, ch := range c.blockSubs {
 			if ch == out {
 				c.blockSubs = append(c.blockSubs[:i], c.blockSubs[i+1:]...)
+
 				close(out)
+
 				break
 			}
 		}
+
 		c.mu.Unlock()
 	}()
 
@@ -131,21 +148,29 @@ func (c *Client) SubscribeSubtrees(ctx context.Context) <-chan teranode.SubtreeM
 	if !c.subtreeStarted {
 		c.subtreeStarted = true
 		topic := TopicName(c.network, TopicSubtree)
+
 		rawChan := c.msgbus.Subscribe(topic)
+
 		go c.fanOutSubtrees(rawChan, topic)
 	}
+
 	c.mu.Unlock()
 
 	go func() {
 		<-ctx.Done()
+
 		c.mu.Lock()
+
 		for i, ch := range c.subtreeSubs {
 			if ch == out {
 				c.subtreeSubs = append(c.subtreeSubs[:i], c.subtreeSubs[i+1:]...)
+
 				close(out)
+
 				break
 			}
 		}
+
 		c.mu.Unlock()
 	}()
 
@@ -163,21 +188,29 @@ func (c *Client) SubscribeRejectedTxs(ctx context.Context) <-chan teranode.Rejec
 	if !c.rejectedStarted {
 		c.rejectedStarted = true
 		topic := TopicName(c.network, TopicRejectedTx)
+
 		rawChan := c.msgbus.Subscribe(topic)
+
 		go c.fanOutRejectedTxs(rawChan, topic)
 	}
+
 	c.mu.Unlock()
 
 	go func() {
 		<-ctx.Done()
+
 		c.mu.Lock()
+
 		for i, ch := range c.rejectedSubs {
 			if ch == out {
 				c.rejectedSubs = append(c.rejectedSubs[:i], c.rejectedSubs[i+1:]...)
+
 				close(out)
+
 				break
 			}
 		}
+
 		c.mu.Unlock()
 	}()
 
@@ -195,21 +228,29 @@ func (c *Client) SubscribeNodeStatus(ctx context.Context) <-chan teranode.NodeSt
 	if !c.statusStarted {
 		c.statusStarted = true
 		topic := TopicName(c.network, TopicNodeStatus)
+
 		rawChan := c.msgbus.Subscribe(topic)
+
 		go c.fanOutNodeStatus(rawChan, topic)
 	}
+
 	c.mu.Unlock()
 
 	go func() {
 		<-ctx.Done()
+
 		c.mu.Lock()
+
 		for i, ch := range c.statusSubs {
 			if ch == out {
 				c.statusSubs = append(c.statusSubs[:i], c.statusSubs[i+1:]...)
+
 				close(out)
+
 				break
 			}
 		}
+
 		c.mu.Unlock()
 	}()
 
@@ -221,10 +262,12 @@ func (c *Client) SubscribeNodeStatus(ctx context.Context) <-chan teranode.NodeSt
 func (c *Client) fanOutBlocks(rawChan <-chan msgbus.Message, topic string) {
 	for msg := range rawChan {
 		var typed teranode.BlockMessage
+
 		if err := json.Unmarshal(msg.Data, &typed); err != nil {
 			c.logger.Error("failed to unmarshal block message",
 				slog.String("topic", topic),
 				slog.String("error", err.Error()))
+
 			continue
 		}
 
@@ -246,10 +289,12 @@ func (c *Client) fanOutBlocks(rawChan <-chan msgbus.Message, topic string) {
 func (c *Client) fanOutSubtrees(rawChan <-chan msgbus.Message, topic string) {
 	for msg := range rawChan {
 		var typed teranode.SubtreeMessage
+
 		if err := json.Unmarshal(msg.Data, &typed); err != nil {
 			c.logger.Error("failed to unmarshal subtree message",
 				slog.String("topic", topic),
 				slog.String("error", err.Error()))
+
 			continue
 		}
 
@@ -270,10 +315,12 @@ func (c *Client) fanOutSubtrees(rawChan <-chan msgbus.Message, topic string) {
 func (c *Client) fanOutRejectedTxs(rawChan <-chan msgbus.Message, topic string) {
 	for msg := range rawChan {
 		var typed teranode.RejectedTxMessage
+
 		if err := json.Unmarshal(msg.Data, &typed); err != nil {
 			c.logger.Error("failed to unmarshal rejected-tx message",
 				slog.String("topic", topic),
 				slog.String("error", err.Error()))
+
 			continue
 		}
 
@@ -294,10 +341,12 @@ func (c *Client) fanOutRejectedTxs(rawChan <-chan msgbus.Message, topic string) 
 func (c *Client) fanOutNodeStatus(rawChan <-chan msgbus.Message, topic string) {
 	for msg := range rawChan {
 		var typed teranode.NodeStatusMessage
+
 		if err := json.Unmarshal(msg.Data, &typed); err != nil {
 			c.logger.Error("failed to unmarshal node_status message",
 				slog.String("topic", topic),
 				slog.String("error", err.Error()))
+
 			continue
 		}
 

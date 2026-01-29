@@ -30,6 +30,8 @@ type Client struct {
 	subtreeStarted  bool
 	rejectedStarted bool
 	statusStarted   bool
+
+	done chan struct{} // signals shutdown to fan-out goroutines
 }
 
 // NewClient creates a new Teranode P2P client.
@@ -44,6 +46,7 @@ func NewClient(cfg Config) (*Client, error) {
 		msgbus:  p2pClient,
 		logger:  slog.Default(),
 		network: cfg.Network,
+		done:    make(chan struct{}),
 	}, nil
 }
 
@@ -60,6 +63,14 @@ func (c *Client) GetNetwork() string {
 // Close shuts down the P2P client and closes all subscriber channels.
 func (c *Client) Close() error {
 	c.mu.Lock()
+
+	// Signal shutdown first (before closing channels)
+	select {
+	case <-c.done:
+		// Already closed
+	default:
+		close(c.done)
+	}
 
 	for _, ch := range c.blockSubs {
 		close(ch)
@@ -259,8 +270,82 @@ func (c *Client) SubscribeNodeStatus(ctx context.Context) <-chan teranode.NodeSt
 
 // Fan-out goroutines - one per topic type
 
+// isShuttingDown checks if the client is shutting down without blocking.
+func (c *Client) isShuttingDown() bool {
+	select {
+	case <-c.done:
+		return true
+	default:
+		return false
+	}
+}
+
+// getBlockSubs returns a snapshot of current block subscribers, or nil if shutting down.
+func (c *Client) getBlockSubs() []chan teranode.BlockMessage {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	if c.isShuttingDown() {
+		return nil
+	}
+
+	subs := make([]chan teranode.BlockMessage, len(c.blockSubs))
+	copy(subs, c.blockSubs)
+
+	return subs
+}
+
+// getSubtreeSubs returns a snapshot of current subtree subscribers, or nil if shutting down.
+func (c *Client) getSubtreeSubs() []chan teranode.SubtreeMessage {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	if c.isShuttingDown() {
+		return nil
+	}
+
+	subs := make([]chan teranode.SubtreeMessage, len(c.subtreeSubs))
+	copy(subs, c.subtreeSubs)
+
+	return subs
+}
+
+// getRejectedSubs returns a snapshot of current rejected tx subscribers, or nil if shutting down.
+func (c *Client) getRejectedSubs() []chan teranode.RejectedTxMessage {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	if c.isShuttingDown() {
+		return nil
+	}
+
+	subs := make([]chan teranode.RejectedTxMessage, len(c.rejectedSubs))
+	copy(subs, c.rejectedSubs)
+
+	return subs
+}
+
+// getStatusSubs returns a snapshot of current status subscribers, or nil if shutting down.
+func (c *Client) getStatusSubs() []chan teranode.NodeStatusMessage {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	if c.isShuttingDown() {
+		return nil
+	}
+
+	subs := make([]chan teranode.NodeStatusMessage, len(c.statusSubs))
+	copy(subs, c.statusSubs)
+
+	return subs
+}
+
 func (c *Client) fanOutBlocks(rawChan <-chan msgbus.Message, topic string) {
 	for msg := range rawChan {
+		if c.isShuttingDown() {
+			return
+		}
+
 		var typed teranode.BlockMessage
 
 		if err := json.Unmarshal(msg.Data, &typed); err != nil {
@@ -271,23 +356,35 @@ func (c *Client) fanOutBlocks(rawChan <-chan msgbus.Message, topic string) {
 			continue
 		}
 
-		c.mu.RLock()
-		subs := make([]chan teranode.BlockMessage, len(c.blockSubs))
-		copy(subs, c.blockSubs)
-		c.mu.RUnlock()
+		subs := c.getBlockSubs()
+		if subs == nil {
+			return
+		}
 
-		for _, ch := range subs {
-			select {
-			case ch <- typed:
-			default:
-				// Subscriber is slow, skip to avoid blocking
-			}
+		c.sendToBlockSubs(subs, typed)
+	}
+}
+
+func (c *Client) sendToBlockSubs(subs []chan teranode.BlockMessage, msg teranode.BlockMessage) {
+	for _, ch := range subs {
+		if c.isShuttingDown() {
+			return
+		}
+
+		select {
+		case ch <- msg:
+		default:
+			// Subscriber is slow, skip to avoid blocking
 		}
 	}
 }
 
 func (c *Client) fanOutSubtrees(rawChan <-chan msgbus.Message, topic string) {
 	for msg := range rawChan {
+		if c.isShuttingDown() {
+			return
+		}
+
 		var typed teranode.SubtreeMessage
 
 		if err := json.Unmarshal(msg.Data, &typed); err != nil {
@@ -298,22 +395,35 @@ func (c *Client) fanOutSubtrees(rawChan <-chan msgbus.Message, topic string) {
 			continue
 		}
 
-		c.mu.RLock()
-		subs := make([]chan teranode.SubtreeMessage, len(c.subtreeSubs))
-		copy(subs, c.subtreeSubs)
-		c.mu.RUnlock()
+		subs := c.getSubtreeSubs()
+		if subs == nil {
+			return
+		}
 
-		for _, ch := range subs {
-			select {
-			case ch <- typed:
-			default:
-			}
+		c.sendToSubtreeSubs(subs, typed)
+	}
+}
+
+func (c *Client) sendToSubtreeSubs(subs []chan teranode.SubtreeMessage, msg teranode.SubtreeMessage) {
+	for _, ch := range subs {
+		if c.isShuttingDown() {
+			return
+		}
+
+		select {
+		case ch <- msg:
+		default:
+			// Subscriber is slow, skip to avoid blocking
 		}
 	}
 }
 
 func (c *Client) fanOutRejectedTxs(rawChan <-chan msgbus.Message, topic string) {
 	for msg := range rawChan {
+		if c.isShuttingDown() {
+			return
+		}
+
 		var typed teranode.RejectedTxMessage
 
 		if err := json.Unmarshal(msg.Data, &typed); err != nil {
@@ -324,22 +434,35 @@ func (c *Client) fanOutRejectedTxs(rawChan <-chan msgbus.Message, topic string) 
 			continue
 		}
 
-		c.mu.RLock()
-		subs := make([]chan teranode.RejectedTxMessage, len(c.rejectedSubs))
-		copy(subs, c.rejectedSubs)
-		c.mu.RUnlock()
+		subs := c.getRejectedSubs()
+		if subs == nil {
+			return
+		}
 
-		for _, ch := range subs {
-			select {
-			case ch <- typed:
-			default:
-			}
+		c.sendToRejectedSubs(subs, typed)
+	}
+}
+
+func (c *Client) sendToRejectedSubs(subs []chan teranode.RejectedTxMessage, msg teranode.RejectedTxMessage) {
+	for _, ch := range subs {
+		if c.isShuttingDown() {
+			return
+		}
+
+		select {
+		case ch <- msg:
+		default:
+			// Subscriber is slow, skip to avoid blocking
 		}
 	}
 }
 
 func (c *Client) fanOutNodeStatus(rawChan <-chan msgbus.Message, topic string) {
 	for msg := range rawChan {
+		if c.isShuttingDown() {
+			return
+		}
+
 		var typed teranode.NodeStatusMessage
 
 		if err := json.Unmarshal(msg.Data, &typed); err != nil {
@@ -350,16 +473,25 @@ func (c *Client) fanOutNodeStatus(rawChan <-chan msgbus.Message, topic string) {
 			continue
 		}
 
-		c.mu.RLock()
-		subs := make([]chan teranode.NodeStatusMessage, len(c.statusSubs))
-		copy(subs, c.statusSubs)
-		c.mu.RUnlock()
+		subs := c.getStatusSubs()
+		if subs == nil {
+			return
+		}
 
-		for _, ch := range subs {
-			select {
-			case ch <- typed:
-			default:
-			}
+		c.sendToStatusSubs(subs, typed)
+	}
+}
+
+func (c *Client) sendToStatusSubs(subs []chan teranode.NodeStatusMessage, msg teranode.NodeStatusMessage) {
+	for _, ch := range subs {
+		if c.isShuttingDown() {
+			return
+		}
+
+		select {
+		case ch <- msg:
+		default:
+			// Subscriber is slow, skip to avoid blocking
 		}
 	}
 }

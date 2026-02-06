@@ -108,6 +108,20 @@ jobs:
           use-local: ${{ env.MAGE_X_USE_LOCAL }}
 
       # --------------------------------------------------------------------
+      # Pre-compile fuzz test binary to warm build cache
+      # --------------------------------------------------------------------
+      - name: 🔨 Pre-compile fuzz test binary
+        run: |
+          echo "🔨 Pre-compiling test binary to warm build cache..."
+          GO_MODULE_DIR="${{ env.GO_MODULE_DIR }}"
+          if [ -n "$GO_MODULE_DIR" ]; then
+            (cd "$GO_MODULE_DIR" && go test -c -o /dev/null .)
+          else
+            go test -c -o /dev/null .
+          fi
+          echo "✅ Build cache warmed for fuzz tests"
+
+      # --------------------------------------------------------------------
       # Start fuzz test timer
       # --------------------------------------------------------------------
       - name: ⏱️ Start fuzz test timer

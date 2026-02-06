@@ -112,12 +112,20 @@ jobs:
       # --------------------------------------------------------------------
       - name: 🔨 Pre-compile fuzz test binary
         run: |
-          echo "🔨 Pre-compiling test binary to warm build cache..."
+          echo "🔨 Pre-compiling fuzz-instrumented test binary to warm build cache..."
           GO_MODULE_DIR="${{ env.GO_MODULE_DIR }}"
-          if [ -n "$GO_MODULE_DIR" ]; then
-            (cd "$GO_MODULE_DIR" && go test -c -o /dev/null .)
+          # Fuzz mode uses coverage-instrumented compilation (different from go test -c).
+          # Run one fuzz iteration to trigger the instrumented build and warm the cache.
+          FUZZ_TARGET=$(grep -rn '^func Fuzz' ${GO_MODULE_DIR:-.}/*_test.go | head -1 | sed 's/.*func \(Fuzz[^(]*\).*/\1/')
+          if [ -n "$FUZZ_TARGET" ]; then
+            echo "🔧 Warming fuzz build cache with target: $FUZZ_TARGET"
+            if [ -n "$GO_MODULE_DIR" ]; then
+              (cd "$GO_MODULE_DIR" && go test -run='^$' -fuzz="$FUZZ_TARGET" -fuzztime=1x .)
+            else
+              go test -run='^$' -fuzz="$FUZZ_TARGET" -fuzztime=1x .
+            fi
           else
-            go test -c -o /dev/null .
+            echo "⚠️ No fuzz targets found, skipping cache warming"
           fi
           echo "✅ Build cache warmed for fuzz tests"
 

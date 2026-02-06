@@ -31,7 +31,8 @@ type Client struct {
 	rejectedStarted bool
 	statusStarted   bool
 
-	done chan struct{} // signals shutdown to fan-out goroutines
+	done     chan struct{}  // signals shutdown to fan-out goroutines
+	fanOutWg sync.WaitGroup // tracks running fan-out goroutines
 }
 
 // NewClient creates a new Teranode P2P client.
@@ -72,6 +73,18 @@ func (c *Client) Close() error {
 		close(c.done)
 	}
 
+	c.mu.Unlock()
+
+	// Close msgbus to stop raw channels, causing fan-out goroutines to exit
+	err := c.msgbus.Close()
+
+	// Wait for all fan-out goroutines to finish — no goroutine is sending
+	// to subscriber channels after this returns
+	c.fanOutWg.Wait()
+
+	// Now safe to close subscriber channels
+	c.mu.Lock()
+
 	for _, ch := range c.blockSubs {
 		close(ch)
 	}
@@ -97,7 +110,7 @@ func (c *Client) Close() error {
 	c.statusSubs = nil
 	c.mu.Unlock()
 
-	return c.msgbus.Close()
+	return err
 }
 
 // GetPeers returns information about all known peers.
@@ -121,7 +134,13 @@ func (c *Client) SubscribeBlocks(ctx context.Context) <-chan teranode.BlockMessa
 
 		rawChan := c.msgbus.Subscribe(topic)
 
-		go c.fanOutBlocks(rawChan, topic)
+		c.fanOutWg.Add(1)
+
+		go func() {
+			defer c.fanOutWg.Done()
+
+			c.fanOutBlocks(rawChan, topic)
+		}()
 	}
 
 	c.mu.Unlock()
@@ -162,7 +181,13 @@ func (c *Client) SubscribeSubtrees(ctx context.Context) <-chan teranode.SubtreeM
 
 		rawChan := c.msgbus.Subscribe(topic)
 
-		go c.fanOutSubtrees(rawChan, topic)
+		c.fanOutWg.Add(1)
+
+		go func() {
+			defer c.fanOutWg.Done()
+
+			c.fanOutSubtrees(rawChan, topic)
+		}()
 	}
 
 	c.mu.Unlock()
@@ -202,7 +227,13 @@ func (c *Client) SubscribeRejectedTxs(ctx context.Context) <-chan teranode.Rejec
 
 		rawChan := c.msgbus.Subscribe(topic)
 
-		go c.fanOutRejectedTxs(rawChan, topic)
+		c.fanOutWg.Add(1)
+
+		go func() {
+			defer c.fanOutWg.Done()
+
+			c.fanOutRejectedTxs(rawChan, topic)
+		}()
 	}
 
 	c.mu.Unlock()
@@ -242,7 +273,13 @@ func (c *Client) SubscribeNodeStatus(ctx context.Context) <-chan teranode.NodeSt
 
 		rawChan := c.msgbus.Subscribe(topic)
 
-		go c.fanOutNodeStatus(rawChan, topic)
+		c.fanOutWg.Add(1)
+
+		go func() {
+			defer c.fanOutWg.Done()
+
+			c.fanOutNodeStatus(rawChan, topic)
+		}()
 	}
 
 	c.mu.Unlock()

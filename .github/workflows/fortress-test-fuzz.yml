@@ -108,6 +108,28 @@ jobs:
           use-local: ${{ env.MAGE_X_USE_LOCAL }}
 
       # --------------------------------------------------------------------
+      # Pre-compile fuzz test binary to warm build cache
+      # --------------------------------------------------------------------
+      - name: 🔨 Pre-compile fuzz test binary
+        run: |
+          echo "🔨 Pre-compiling fuzz-instrumented test binary to warm build cache..."
+          GO_MODULE_DIR="${{ env.GO_MODULE_DIR }}"
+          # Fuzz mode uses coverage-instrumented compilation (different from go test -c).
+          # Run one fuzz iteration to trigger the instrumented build and warm the cache.
+          FUZZ_TARGET=$(grep -rn '^func Fuzz' ${GO_MODULE_DIR:-.}/*_test.go | head -1 | sed 's/.*func \(Fuzz[^(]*\).*/\1/')
+          if [ -n "$FUZZ_TARGET" ]; then
+            echo "🔧 Warming fuzz build cache with target: $FUZZ_TARGET"
+            if [ -n "$GO_MODULE_DIR" ]; then
+              (cd "$GO_MODULE_DIR" && go test -run='^$' -fuzz="$FUZZ_TARGET" -fuzztime=1x .)
+            else
+              go test -run='^$' -fuzz="$FUZZ_TARGET" -fuzztime=1x .
+            fi
+          else
+            echo "⚠️ No fuzz targets found, skipping cache warming"
+          fi
+          echo "✅ Build cache warmed for fuzz tests"
+
+      # --------------------------------------------------------------------
       # Start fuzz test timer
       # --------------------------------------------------------------------
       - name: ⏱️ Start fuzz test timer

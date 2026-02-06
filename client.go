@@ -367,11 +367,9 @@ func (c *Client) fanOutBlocks(rawChan <-chan msgbus.Message, topic string) {
 
 func (c *Client) sendToBlockSubs(subs []chan teranode.BlockMessage, msg teranode.BlockMessage) {
 	for _, ch := range subs {
-		if c.isShuttingDown() {
-			return
-		}
-
 		select {
+		case <-c.done:
+			return
 		case ch <- msg:
 		default:
 			// Subscriber is slow, skip to avoid blocking
@@ -406,11 +404,9 @@ func (c *Client) fanOutSubtrees(rawChan <-chan msgbus.Message, topic string) {
 
 func (c *Client) sendToSubtreeSubs(subs []chan teranode.SubtreeMessage, msg teranode.SubtreeMessage) {
 	for _, ch := range subs {
-		if c.isShuttingDown() {
-			return
-		}
-
 		select {
+		case <-c.done:
+			return
 		case ch <- msg:
 		default:
 			// Subscriber is slow, skip to avoid blocking
@@ -445,11 +441,9 @@ func (c *Client) fanOutRejectedTxs(rawChan <-chan msgbus.Message, topic string) 
 
 func (c *Client) sendToRejectedSubs(subs []chan teranode.RejectedTxMessage, msg teranode.RejectedTxMessage) {
 	for _, ch := range subs {
-		if c.isShuttingDown() {
-			return
-		}
-
 		select {
+		case <-c.done:
+			return
 		case ch <- msg:
 		default:
 			// Subscriber is slow, skip to avoid blocking
@@ -484,11 +478,9 @@ func (c *Client) fanOutNodeStatus(rawChan <-chan msgbus.Message, topic string) {
 
 func (c *Client) sendToStatusSubs(subs []chan teranode.NodeStatusMessage, msg teranode.NodeStatusMessage) {
 	for _, ch := range subs {
-		if c.isShuttingDown() {
-			return
-		}
-
 		select {
+		case <-c.done:
+			return
 		case ch <- msg:
 		default:
 			// Subscriber is slow, skip to avoid blocking

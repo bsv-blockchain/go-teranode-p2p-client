@@ -167,24 +167,12 @@ jobs:
                 TOTAL_SKIPPED=$((TOTAL_SKIPPED + SKIPPED))
 
                 if [[ "$STATUS" == "failed" ]] || [[ "$FAILED" -gt 0 ]]; then
-                  # Count actual test failures (exclude build warnings and config warnings)
-                  # First pass: count actual test failures (not build warnings)
-                  ACTUAL_FAILURES=0
-                  while IFS= read -r line; do
-                    FAIL_TYPE=$(echo "$line" | jq -r '.failure.type // "test"')
-                    ERROR_MSG=$(echo "$line" | jq -r '.failure.error // ""')
+                  VALIDATION_FAILED=true
+                  TOTAL_FAILURES=$((TOTAL_FAILURES + FAILED))
 
-                    # Skip build-type failures and warning messages (not actual test failures)
-                    if [[ "$FAIL_TYPE" == "build" ]] || [[ "$ERROR_MSG" =~ WARN:|"No config file" ]]; then
-                      continue
-                    fi
-
-                    ACTUAL_FAILURES=$((ACTUAL_FAILURES + 1))
-                  done < <(grep '"type":"failure"' "$jsonl_file" 2>/dev/null || true)
-
-                  # Extract failure details for display
+                  # Extract failure details
                   echo ""
-                  echo "  🚨 Analyzing failures in this file:"
+                  echo "  🚨 Failures in this file:"
                   grep '"type":"failure"' "$jsonl_file" 2>/dev/null | while read -r line; do
                     TEST=$(echo "$line" | jq -r '.failure.test // "unknown"')
                     PKG=$(echo "$line" | jq -r '.failure.package // "unknown"' | sed 's|.*/||')
@@ -192,15 +180,6 @@ jobs:
                     LINE_NUM=$(echo "$line" | jq -r '.failure.line // ""')
                     FAIL_TYPE=$(echo "$line" | jq -r '.failure.type // "test"')
                     ERROR_MSG=$(echo "$line" | jq -r '.failure.error // ""')
-
-                    # Skip build-type failures and warning messages (not actual test failures)
-                    if [[ "$FAIL_TYPE" == "build" ]] || [[ "$ERROR_MSG" =~ WARN:|"No config file" ]]; then
-                      echo "    ⚠️  [$FAIL_TYPE] $TEST ($PKG) - Skipped (build warning, not test failure)"
-                      if [[ -n "$ERROR_MSG" && "$ERROR_MSG" != "null" ]]; then
-                        echo "       → ${ERROR_MSG:0:200}"
-                      fi
-                      continue
-                    fi
 
                     # Show test name with type and location
                     if [[ -n "$FILE" && -n "$LINE_NUM" && "$LINE_NUM" != "0" ]]; then
@@ -214,12 +193,6 @@ jobs:
                       echo "       → ${ERROR_MSG:0:200}"
                     fi
                   done | head -30
-
-                  # Only mark as failed if there are actual test failures (not build warnings)
-                  if [[ $ACTUAL_FAILURES -gt 0 ]]; then
-                    VALIDATION_FAILED=true
-                    TOTAL_FAILURES=$((TOTAL_FAILURES + ACTUAL_FAILURES))
-                  fi
                 fi
               else
                 echo "  ⚠️ No summary found in JSONL file"

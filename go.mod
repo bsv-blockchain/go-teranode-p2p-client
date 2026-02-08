@@ -36,15 +36,15 @@ require (
 	github.com/aws/smithy-go v1.24.0 // indirect
 	github.com/benbjohnson/clock v1.3.5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bsv-blockchain/go-batcher v1.2.6 // indirect
-	github.com/bsv-blockchain/go-bt/v2 v2.5.2 // indirect
-	github.com/bsv-blockchain/go-chaincfg v1.5.3 // indirect
-	github.com/bsv-blockchain/go-lockfree-queue v1.1.1 // indirect
-	github.com/bsv-blockchain/go-safe-conversion v1.1.1 // indirect
-	github.com/bsv-blockchain/go-sdk v1.2.16 // indirect
-	github.com/bsv-blockchain/go-subtree v1.1.7 // indirect
-	github.com/bsv-blockchain/go-tx-map v1.3.1 // indirect
-	github.com/bsv-blockchain/go-wire v1.1.2 // indirect
+	github.com/bsv-blockchain/go-batcher v1.2.7 // indirect
+	github.com/bsv-blockchain/go-bt/v2 v2.5.3 // indirect
+	github.com/bsv-blockchain/go-chaincfg v1.5.4 // indirect
+	github.com/bsv-blockchain/go-lockfree-queue v1.1.2 // indirect
+	github.com/bsv-blockchain/go-safe-conversion v1.1.2 // indirect
+	github.com/bsv-blockchain/go-sdk v1.2.17 // indirect
+	github.com/bsv-blockchain/go-subtree v1.1.8 // indirect
+	github.com/bsv-blockchain/go-tx-map v1.3.2 // indirect
+	github.com/bsv-blockchain/go-wire v1.1.3 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -237,9 +237,9 @@ require (
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
 	golang.org/x/mod v0.32.0 // indirect
 	golang.org/x/net v0.49.0 // indirect
-	golang.org/x/oauth2 v0.34.0 // indirect
+	golang.org/x/oauth2 v0.35.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260205145544-86a5c4bf3c8d // indirect
 	golang.org/x/term v0.39.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
@@ -266,7 +266,7 @@ require (
 	modernc.org/sqlite v1.44.3 // indirect
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect
-	sigs.k8s.io/structured-merge-diff/v6 v6.3.1 // indirect
+	sigs.k8s.io/structured-merge-diff/v6 v6.3.2 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 

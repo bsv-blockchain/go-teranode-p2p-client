@@ -24,7 +24,7 @@ func getDefaultBootstrapPeers() map[string][]string {
 			"/dns4/teranode-eks-testnet-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWK7tQiJHKp4TmS632XTXy7nScvVvyL7Qx5YiU65EYnRub",
 			"/dns4/teranode-eks-testnet-eu-2-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWR9DMm622shDLAe5hQZk4phNERF84S77JocXfLyZU9NsF",
 		},
-		"stn": {
+		"ttn": {
 			"/dns4/teranode-eks-ttn-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWFj5nh1m3iAooxnfp5VvDtufYajTpBSopUt7anj4XLqJp",
 			"/dns4/teranode-eks-ttn-eu-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWDnQoDerA2KC8xD5hDqiSp21zf9zS5ezM32wuXgLUaden",
 		},

@@ -280,7 +280,7 @@ func TestSubscribeBlocks_SlowSubscriber(t *testing.T) {
 
 	// Send many messages - slow subscriber should be skipped, fast one should still work
 	for i := range 150 {
-		blockMsg := teranode.BlockMessage{Height: uint32(i)} //nolint:gosec // test code, i is small
+		blockMsg := teranode.BlockMessage{Height: uint32(i)}
 
 		data, err := json.Marshal(blockMsg)
 		require.NoError(t, err)
@@ -606,8 +606,8 @@ func TestFanOut_StopsDuringShutdown(t *testing.T) {
 
 	// Send some messages before close
 	for i := range 5 {
-		blockMsg := teranode.BlockMessage{Height: uint32(i)} //nolint:gosec // test code
-		data, _ := json.Marshal(blockMsg)                    //nolint:errchkjson // test code
+		blockMsg := teranode.BlockMessage{Height: uint32(i)}
+		data, _ := json.Marshal(blockMsg) //nolint:errchkjson // test code
 		mock.sendMessage(topic, data)
 	}
 

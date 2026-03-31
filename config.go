@@ -17,16 +17,13 @@ import (
 func getDefaultBootstrapPeers() map[string][]string {
 	return map[string][]string{
 		"main": {
-			"/dns4/teranode-eks-mainnet-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWH5JVqGdaw7JEizmysCfRRcPGTFfvRJF7Hkure7oQWYnb",
-			"/dns4/teranode-eks-mainnet-eu-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooW9z2JRV37TqsmU8sDQcSQDZGSgtPpvWUmVegYxYvXfW9H",
+			"/dnsaddr/mainnet.bootstrap.teranode.bsvb.tech",
 		},
 		"test": {
-			"/dns4/teranode-eks-testnet-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWK7tQiJHKp4TmS632XTXy7nScvVvyL7Qx5YiU65EYnRub",
-			"/dns4/teranode-eks-testnet-eu-2-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWR9DMm622shDLAe5hQZk4phNERF84S77JocXfLyZU9NsF",
+			"/dnsaddr/testnet.bootstrap.teranode.bsvb.tech",
 		},
 		"stn": {
-			"/dns4/teranode-eks-ttn-us-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWFj5nh1m3iAooxnfp5VvDtufYajTpBSopUt7anj4XLqJp",
-			"/dns4/teranode-eks-ttn-eu-1-p2p.bsvb.tech/tcp/9905/p2p/12D3KooWDnQoDerA2KC8xD5hDqiSp21zf9zS5ezM32wuXgLUaden",
+			"/dnsaddr/teratestnet.bootstrap.teranode.bsvb.tech",
 		},
 	}
 }

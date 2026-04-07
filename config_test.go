@@ -133,27 +133,24 @@ func TestGetDefaultBootstrapPeers_Main(t *testing.T) {
 	peers := getDefaultBootstrapPeers()
 
 	mainPeers := peers["main"]
-	require.Len(t, mainPeers, 2)
+	require.Len(t, mainPeers, 1)
 	assert.Contains(t, mainPeers[0], "mainnet")
-	assert.Contains(t, mainPeers[1], "mainnet")
 }
 
 func TestGetDefaultBootstrapPeers_Test(t *testing.T) {
 	peers := getDefaultBootstrapPeers()
 
 	testPeers := peers["test"]
-	require.Len(t, testPeers, 2)
+	require.Len(t, testPeers, 1)
 	assert.Contains(t, testPeers[0], "testnet")
-	assert.Contains(t, testPeers[1], "testnet")
 }
 
 func TestGetDefaultBootstrapPeers_STN(t *testing.T) {
 	peers := getDefaultBootstrapPeers()
 
 	stnPeers := peers["stn"]
-	require.Len(t, stnPeers, 2)
-	assert.Contains(t, stnPeers[0], "ttn")
-	assert.Contains(t, stnPeers[1], "ttn")
+	require.Len(t, stnPeers, 1)
+	assert.Contains(t, stnPeers[0], "teratestnet")
 }
 
 func TestGetDefaultBootstrapPeers_Teratestnet_NotIncluded(t *testing.T) {
@@ -186,16 +183,13 @@ func TestConfig_Initialize_SetsStoragePath(t *testing.T) {
 }
 
 func TestBootstrapPeerAddresses(t *testing.T) {
-	// Verify bootstrap peers are valid multiaddr format
+	// Verify bootstrap peers are valid dnsaddr multiaddr format
 	peers := getDefaultBootstrapPeers()
 
 	for network, addrs := range peers {
 		for i, addr := range addrs {
-			// Check basic multiaddr format: /dns4/.../tcp/.../p2p/...
-			assert.Contains(t, addr, "/dns4/", "peer %d for %s should have dns4", i, network)
-			assert.Contains(t, addr, "/tcp/", "peer %d for %s should have tcp", i, network)
-			assert.Contains(t, addr, "/p2p/", "peer %d for %s should have p2p", i, network)
-			assert.Contains(t, addr, "12D3KooW", "peer %d for %s should have valid peer ID prefix", i, network)
+			assert.Contains(t, addr, "/dnsaddr/", "peer %d for %s should have dnsaddr", i, network)
+			assert.Contains(t, addr, "bootstrap.teranode.bsvb.tech", "peer %d for %s should have bootstrap domain", i, network)
 		}
 	}
 }

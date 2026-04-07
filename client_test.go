@@ -67,6 +67,10 @@ func (m *mockMsgBusClient) Publish(_ context.Context, _ string, _ []byte) error 
 	return nil
 }
 
+func (m *mockMsgBusClient) Connect(_ context.Context, _ string) error {
+	return nil
+}
+
 // sendMessage sends a message to all subscribers of the given topic
 func (m *mockMsgBusClient) sendMessage(topic string, data []byte) {
 	m.mu.Lock()

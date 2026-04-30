@@ -115,6 +115,12 @@ func (c *Config) Initialize(_ context.Context, name string) (*Client, error) {
 		c.MsgBus.BootstrapPeers = getDefaultBootstrapPeers()[c.Network]
 	}
 
+	// regtest is a local/private-network mode; the upstream gater otherwise
+	// rejects RFC1918 and loopback dials, which blocks every realistic regtest peer.
+	if c.Network == NetworkRegtest {
+		c.MsgBus.AllowPrivateIPs = true
+	}
+
 	if c.MsgBus.PeerCacheFile == "" {
 		c.MsgBus.PeerCacheFile = filepath.Join(c.StoragePath, "peer_cache.json")
 	}

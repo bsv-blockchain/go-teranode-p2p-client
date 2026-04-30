@@ -1,6 +1,7 @@
 package p2p
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -170,6 +171,35 @@ func TestGetDefaultBootstrapPeers_Regtest_NotIncluded(t *testing.T) {
 
 	regtestPeers := peers["regtest"]
 	assert.Empty(t, regtestPeers, "regtest should not have default bootstrap peers")
+}
+
+func TestConfig_Initialize_RegtestAllowsPrivateIPs(t *testing.T) {
+	cases := []struct {
+		network string
+		want    bool
+	}{
+		{NetworkRegtest, true},
+		{NetworkMainnet, false},
+		{"main", false},
+		{NetworkTestnet, false},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.network, func(t *testing.T) {
+			cfg := &Config{
+				Network:     tc.network,
+				StoragePath: t.TempDir(),
+			}
+
+			client, err := cfg.Initialize(context.Background(), "test")
+			if err != nil {
+				t.Skipf("Initialize requires network/host setup: %v", err)
+			}
+			t.Cleanup(func() { _ = client.Close() })
+
+			assert.Equal(t, tc.want, cfg.MsgBus.AllowPrivateIPs)
+		})
+	}
 }
 
 func TestConfig_Initialize_SetsStoragePath(t *testing.T) {

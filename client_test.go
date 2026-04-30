@@ -107,7 +107,7 @@ func TestClient_GetNetwork(t *testing.T) {
 }
 
 func TestClient_GetNetwork_AllNetworks(t *testing.T) {
-	networks := []string{NetworkMainnet, NetworkTestnet, NetworkSTN, NetworkTeratestnet}
+	networks := []string{NetworkMainnet, NetworkTestnet, NetworkSTN, NetworkTeratestnet, NetworkRegtest}
 
 	for _, network := range networks {
 		t.Run(network, func(t *testing.T) {

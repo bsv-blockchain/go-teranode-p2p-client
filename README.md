@@ -140,8 +140,9 @@ Use `TopicName(network, topic)` to construct full topic names (e.g., `teranode/b
 | `NetworkTestnet`     | `testnet`     |
 | `NetworkSTN`         | `stn`         |
 | `NetworkTeratestnet` | `teratestnet` |
+| `NetworkRegtest`     | `regtest`     |
 
-> **Note:** `NetworkTeratestnet` requires manual bootstrap peer configuration via `Config.MsgBus.BootstrapPeers`.
+> **Note:** `NetworkTeratestnet` and `NetworkRegtest` require manual bootstrap peer configuration via `Config.MsgBus.BootstrapPeers`.
 
 ## Bootstrap Peers
 

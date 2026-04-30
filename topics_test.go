@@ -62,6 +62,12 @@ func TestTopicName_AllNetworks(t *testing.T) {
 			expected: "teranode/bitcoin/1.0.0/teratestnet-node_status",
 		},
 		{
+			name:     "regtest block",
+			network:  NetworkRegtest,
+			topic:    TopicBlock,
+			expected: "teranode/bitcoin/1.0.0/regtest-block",
+		},
+		{
 			name:     "unknown network passes through unchanged",
 			network:  "custom",
 			topic:    TopicBlock,
@@ -97,6 +103,16 @@ func TestAllTopics_Testnet(t *testing.T) {
 	assert.Contains(t, topics, "teranode/bitcoin/1.0.0/testnet-node_status")
 }
 
+func TestAllTopics_Regtest(t *testing.T) {
+	topics := AllTopics(NetworkRegtest)
+
+	require.Len(t, topics, 4)
+	assert.Contains(t, topics, "teranode/bitcoin/1.0.0/regtest-block")
+	assert.Contains(t, topics, "teranode/bitcoin/1.0.0/regtest-subtree")
+	assert.Contains(t, topics, "teranode/bitcoin/1.0.0/regtest-rejected-tx")
+	assert.Contains(t, topics, "teranode/bitcoin/1.0.0/regtest-node_status")
+}
+
 func TestNetworkMapping(t *testing.T) {
 	mapping := getNetworkToTopic()
 
@@ -110,6 +126,7 @@ func TestNetworkMapping(t *testing.T) {
 	assert.Equal(t, NetworkTestnet, mapping[NetworkTestnet])
 	assert.Equal(t, NetworkSTN, mapping[NetworkSTN])
 	assert.Equal(t, NetworkTeratestnet, mapping[NetworkTeratestnet])
+	assert.Equal(t, NetworkRegtest, mapping[NetworkRegtest])
 }
 
 func TestTopicConstants(t *testing.T) {
@@ -126,4 +143,5 @@ func TestNetworkConstants(t *testing.T) {
 	assert.Equal(t, "testnet", NetworkTestnet)
 	assert.Equal(t, "stn", NetworkSTN)
 	assert.Equal(t, "teratestnet", NetworkTeratestnet)
+	assert.Equal(t, "regtest", NetworkRegtest)
 }

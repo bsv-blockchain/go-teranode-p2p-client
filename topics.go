@@ -19,6 +19,7 @@ const (
 	NetworkTestnet     = "testnet"
 	NetworkSTN         = "stn"
 	NetworkTeratestnet = "teratestnet"
+	NetworkRegtest     = "regtest"
 )
 
 // getNetworkToTopic returns a map from config network names to topic network names.
@@ -31,6 +32,7 @@ func getNetworkToTopic() map[string]string {
 		NetworkSTN:         NetworkSTN,
 		"teratest":         NetworkTeratestnet,
 		NetworkTeratestnet: NetworkTeratestnet,
+		NetworkRegtest:     NetworkRegtest,
 	}
 }
 

@@ -165,6 +165,13 @@ func TestGetDefaultBootstrapPeers_Teratestnet_NotIncluded(t *testing.T) {
 	assert.Empty(t, teratestPeers2, "teratest should not have default bootstrap peers")
 }
 
+func TestGetDefaultBootstrapPeers_Regtest_NotIncluded(t *testing.T) {
+	peers := getDefaultBootstrapPeers()
+
+	regtestPeers := peers["regtest"]
+	assert.Empty(t, regtestPeers, "regtest should not have default bootstrap peers")
+}
+
 func TestConfig_Initialize_SetsStoragePath(t *testing.T) {
 	// This test only verifies the storage path resolution,
 	// not the full initialization which requires network connectivity.

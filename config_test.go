@@ -195,6 +195,7 @@ func TestConfig_Initialize_RegtestAllowsPrivateIPs(t *testing.T) {
 			if err != nil {
 				t.Skipf("Initialize requires network/host setup: %v", err)
 			}
+
 			t.Cleanup(func() { _ = client.Close() })
 
 			assert.Equal(t, tc.want, cfg.MsgBus.AllowPrivateIPs)

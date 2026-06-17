@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/bsv-blockchain/go-p2p-message-bus v0.1.20
-	github.com/bsv-blockchain/teranode v0.15.1
+	github.com/bsv-blockchain/teranode v0.15.2
 	github.com/libp2p/go-libp2p v0.48.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
@@ -14,7 +14,6 @@ require (
 	filippo.io/bigmod v0.1.1-0.20260103110540-f8a47775ebe5 // indirect
 	filippo.io/keygen v0.0.0-20260114151900-8e2790ea4c5b // indirect
 	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
-	github.com/aerospike/aerospike-client-go/v8 v8.7.0 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.42.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.13 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.32.25 // indirect
@@ -36,6 +35,7 @@ require (
 	github.com/aws/smithy-go v1.27.2 // indirect
 	github.com/benbjohnson/clock v1.3.5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bsv-blockchain/aerospike-client-go/v8 v8.7.1-bsv3 // indirect
 	github.com/bsv-blockchain/go-batcher/v2 v2.0.5 // indirect
 	github.com/bsv-blockchain/go-bt/v2 v2.6.7 // indirect
 	github.com/bsv-blockchain/go-chaincfg v1.5.10 // indirect
@@ -45,10 +45,8 @@ require (
 	github.com/bsv-blockchain/go-subtree v1.4.4 // indirect
 	github.com/bsv-blockchain/go-tx-map v1.3.9 // indirect
 	github.com/bsv-blockchain/go-wire v1.2.10 // indirect
-	github.com/bsv-blockchain/testcontainers-aerospike-go v0.3.6 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/containerd/platforms v1.0.0-rc.4 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect
@@ -137,8 +135,6 @@ require (
 	github.com/mikioh/tcpinfo v0.0.0-20190314235526-30a79bb1804b // indirect
 	github.com/mikioh/tcpopt v0.0.0-20190314235656-172688c1accc // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
-	github.com/moby/moby/api v1.54.2 // indirect
-	github.com/moby/moby/client v0.4.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/mr-tron/base58 v1.3.0 // indirect
@@ -195,8 +191,6 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/stretchr/objx v0.5.3 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/testcontainers/testcontainers-go v0.42.0 // indirect
-	github.com/testcontainers/testcontainers-go/modules/postgres v0.42.0 // indirect
 	github.com/twmb/franz-go v1.21.3 // indirect
 	github.com/twmb/franz-go/pkg/kadm v1.18.0 // indirect
 	github.com/twmb/franz-go/pkg/kmsg v1.13.1 // indirect

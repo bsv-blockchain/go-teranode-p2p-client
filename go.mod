@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	github.com/bsv-blockchain/go-p2p-message-bus v0.1.21
-	github.com/bsv-blockchain/teranode v0.16.0-beta-2
+	github.com/bsv-blockchain/teranode v0.16.0-beta-4
 	github.com/libp2p/go-libp2p v0.48.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1

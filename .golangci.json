@@ -149,7 +149,10 @@
             },
             "gomoddirectives": {
                 "replace-allow-list": [
-                    "github.com/opencontainers/runc"
+                    "github.com/opencontainers/runc",
+                    "github.com/quic-go/quic-go",
+                    "github.com/quic-go/webtransport-go",
+                    "k8s.io/kube-openapi"
                 ]
             },
             "govet": {

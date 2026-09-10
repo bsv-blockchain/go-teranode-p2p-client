@@ -274,9 +274,24 @@ require (
 	sigs.k8s.io/json v0.0.0-20260909141634-11ed52e25bc5 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect
 	sigs.k8s.io/structured-merge-diff/v6 v6.4.2 // indirect
-	sigs.k8s.io/structured-merge-diff/v7 v7.0.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
 // CVE-2025-52881
 replace github.com/opencontainers/runc => github.com/opencontainers/runc v1.4.0
+
+// Pin transitive deps that Dependabot keeps bumping past what our direct
+// dependencies can build against. Replace directives (unlike require) are not
+// touched by Dependabot, so these survive weekly dependency bumps.
+//
+// go-libp2p v0.49.0 uses webtransport.Dialer, removed in webtransport-go
+// v0.12.0+, and is built against quic-go v0.60.0.
+replace (
+	github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.60.0
+	github.com/quic-go/webtransport-go => github.com/quic-go/webtransport-go v0.11.1
+)
+
+// k8s.io/{api,apimachinery,client-go} v0.37.0 use structured-merge-diff/v6 via
+// kube-openapi ...20260721; newer kube-openapi switched to smd/v7, which breaks
+// apimachinery's managedfields type converter (v6/v7 TypeDef mismatch).
+replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20260721132016-d427ff9ee9ad

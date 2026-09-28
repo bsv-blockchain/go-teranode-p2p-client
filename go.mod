@@ -5,7 +5,7 @@ go 1.27.0
 require (
 	github.com/bsv-blockchain/go-p2p-message-bus v0.1.26
 	github.com/bsv-blockchain/teranode v0.16.0-beta-9
-	github.com/libp2p/go-libp2p v0.49.0
+	github.com/libp2p/go-libp2p v0.50.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.12.1
 )
@@ -264,7 +264,12 @@ require (
 	k8s.io/apimachinery v0.37.0 // indirect
 	k8s.io/client-go v0.37.0 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
-	k8s.io/kube-openapi v0.0.0-20260908163437-c4db2bdfbfe6 // indirect
+	// Keep kube-openapi at ...20260721 until k8s.io/apimachinery moves past v0.37:
+	// newer kube-openapi uses structured-merge-diff/v7, which v0.37 cannot build
+	// against. Go selects the highest version any module requires and ignores a
+	// dependency's replace directives, so requiring a newer one here breaks every
+	// module that imports this one.
+	k8s.io/kube-openapi v0.0.0-20260721132016-d427ff9ee9ad // indirect
 	k8s.io/utils v0.0.0-20260707023825-cf1189d6abe3 // indirect
 	lukechampine.com/blake3 v1.4.1 // indirect
 	modernc.org/libc v1.75.7 // indirect
@@ -279,19 +284,3 @@ require (
 
 // CVE-2025-52881
 replace github.com/opencontainers/runc => github.com/opencontainers/runc v1.4.0
-
-// Pin transitive deps that Dependabot keeps bumping past what our direct
-// dependencies can build against. Replace directives (unlike require) are not
-// touched by Dependabot, so these survive weekly dependency bumps.
-//
-// go-libp2p v0.49.0 uses webtransport.Dialer, removed in webtransport-go
-// v0.12.0+, and is built against quic-go v0.60.0.
-replace (
-	github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.60.0
-	github.com/quic-go/webtransport-go => github.com/quic-go/webtransport-go v0.11.1
-)
-
-// k8s.io/{api,apimachinery,client-go} v0.37.0 use structured-merge-diff/v6 via
-// kube-openapi ...20260721; newer kube-openapi switched to smd/v7, which breaks
-// apimachinery's managedfields type converter (v6/v7 TypeDef mismatch).
-replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20260721132016-d427ff9ee9ad

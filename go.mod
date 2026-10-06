@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	github.com/bsv-blockchain/go-p2p-message-bus v0.1.28
-	github.com/bsv-blockchain/teranode v0.16.0-beta-9
+	github.com/bsv-blockchain/teranode v0.16.0
 	github.com/libp2p/go-libp2p v0.50.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.12.1
@@ -37,7 +37,7 @@ require (
 	github.com/aws/smithy-go v1.28.1 // indirect
 	github.com/benbjohnson/clock v1.3.5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bsv-blockchain/aerospike-client-go/v8 v8.7.1-bsv5 // indirect
+	github.com/bsv-blockchain/aerospike-client-go/v8 v8.7.1-bsv6 // indirect
 	github.com/bsv-blockchain/go-batcher/v2 v2.1.0 // indirect
 	github.com/bsv-blockchain/go-bc v1.2.0 // indirect
 	github.com/bsv-blockchain/go-bt/v2 v2.7.1 // indirect
@@ -45,7 +45,7 @@ require (
 	github.com/bsv-blockchain/go-lockfree-queue v1.2.0 // indirect
 	github.com/bsv-blockchain/go-safe-conversion v1.2.0 // indirect
 	github.com/bsv-blockchain/go-sdk v1.4.1 // indirect
-	github.com/bsv-blockchain/go-subtree v1.5.0 // indirect
+	github.com/bsv-blockchain/go-subtree v1.5.1 // indirect
 	github.com/bsv-blockchain/go-tx-map v1.4.1 // indirect
 	github.com/bsv-blockchain/go-wire v1.2.13 // indirect
 	github.com/bsv-blockchain/testcontainers-aerospike-go v0.4.4 // indirect
@@ -56,9 +56,6 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect
-	github.com/dgraph-io/badger/v4 v4.9.6 // indirect
-	github.com/dgraph-io/ristretto/v2 v2.4.2 // indirect
-	github.com/dgryski/go-metro v0.0.0-20250106013310-edb8663e5e33 // indirect
 	github.com/docker/go-connections v0.8.1 // indirect
 	github.com/dolthub/maphash v0.1.0 // indirect
 	github.com/dolthub/swiss v0.2.1 // indirect
@@ -87,7 +84,6 @@ require (
 	github.com/go-openapi/swag/typeutils v0.29.2 // indirect
 	github.com/go-openapi/swag/yamlutils v0.29.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
-	github.com/google/flatbuffers v25.12.19+incompatible // indirect
 	github.com/google/gnostic-models v0.7.1 // indirect
 	github.com/google/gopacket v1.1.19 // indirect
 	github.com/google/pprof v0.0.0-20260906184651-6331bc6350fe // indirect
@@ -165,7 +161,7 @@ require (
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/onsi/ginkgo/v2 v2.28.1 // indirect
 	github.com/onsi/gomega v1.42.1 // indirect
-	github.com/ordishs/gocore v1.0.82 // indirect
+	github.com/ordishs/gocore v1.1.0 // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/pierrec/lz4/v4 v4.1.29 // indirect
@@ -201,7 +197,6 @@ require (
 	github.com/rogpeppe/go-internal v1.15.0 // indirect
 	github.com/rs/zerolog v1.35.1 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
-	github.com/seiflotfy/cuckoofilter v0.0.0-20240715131351-a2f2c23f1771 // indirect
 	github.com/sercand/kuberesolver/v6 v6.0.1 // indirect
 	github.com/shirou/gopsutil/v4 v4.26.8 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect

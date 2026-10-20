@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	github.com/bsv-blockchain/go-p2p-message-bus v0.2.0
-	github.com/bsv-blockchain/teranode v0.16.1-beta-1
+	github.com/bsv-blockchain/teranode v0.16.1-beta-txmeta-2
 	github.com/libp2p/go-libp2p v0.50.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.12.1
@@ -46,7 +46,7 @@ require (
 	github.com/bsv-blockchain/go-lockfree-queue v1.2.0 // indirect
 	github.com/bsv-blockchain/go-safe-conversion v1.2.0 // indirect
 	github.com/bsv-blockchain/go-sdk v1.7.2 // indirect
-	github.com/bsv-blockchain/go-subtree v1.6.0 // indirect
+	github.com/bsv-blockchain/go-subtree v1.6.1 // indirect
 	github.com/bsv-blockchain/go-tx-map v1.5.0 // indirect
 	github.com/bsv-blockchain/go-wire v1.4.0 // indirect
 	github.com/bsv-blockchain/testcontainers-aerospike-go v0.5.0 // indirect
@@ -232,7 +232,7 @@ require (
 	go.uber.org/zap v1.28.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/crypto v0.57.0 // indirect
+	golang.org/x/crypto v0.58.0 // indirect
 	golang.org/x/exp v0.0.0-20261007192929-f45ad48fbe92 // indirect
 	golang.org/x/mod v0.41.0 // indirect
 	golang.org/x/net v0.60.0 // indirect
@@ -240,8 +240,8 @@ require (
 	golang.org/x/sync v0.24.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260924152758-ed294f943157 // indirect
-	golang.org/x/term v0.46.0 // indirect
-	golang.org/x/text v0.42.0 // indirect
+	golang.org/x/term v0.47.0 // indirect
+	golang.org/x/text v0.43.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
 	golang.org/x/tools v0.51.0 // indirect
 	gonum.org/v1/gonum v0.17.0 // indirect

@@ -3,7 +3,7 @@ module github.com/bsv-blockchain/go-teranode-p2p-client
 go 1.27.3
 
 require (
-	github.com/bsv-blockchain/go-p2p-message-bus v0.2.0
+	github.com/bsv-blockchain/go-p2p-message-bus v0.3.0
 	github.com/bsv-blockchain/teranode v0.16.1-beta-txmeta-2
 	github.com/libp2p/go-libp2p v0.51.0
 	github.com/spf13/viper v1.21.0

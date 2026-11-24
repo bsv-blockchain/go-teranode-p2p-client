@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log/slog"
+	"net"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -68,6 +69,34 @@ func (m *mockMsgBusClient) Publish(_ context.Context, _ string, _ []byte) error 
 }
 
 func (m *mockMsgBusClient) Connect(_ context.Context, _ string) error {
+	return nil
+}
+
+func (m *mockMsgBusClient) PeerAddrs(_ string) []string {
+	return nil
+}
+
+func (m *mockMsgBusClient) BlockAddr(_ net.IP) error {
+	return nil
+}
+
+func (m *mockMsgBusClient) UnblockAddr(_ net.IP) error {
+	return nil
+}
+
+func (m *mockMsgBusClient) BlockSubnet(_ *net.IPNet) error {
+	return nil
+}
+
+func (m *mockMsgBusClient) UnblockSubnet(_ *net.IPNet) error {
+	return nil
+}
+
+func (m *mockMsgBusClient) BlockPeer(_ string) error {
+	return nil
+}
+
+func (m *mockMsgBusClient) UnblockPeer(_ string) error {
 	return nil
 }
 

@@ -4,7 +4,7 @@ go 1.27.3
 
 require (
 	github.com/bsv-blockchain/go-p2p-message-bus v0.3.1
-	github.com/bsv-blockchain/teranode v0.16.1-beta-txmeta-2
+	github.com/bsv-blockchain/teranode v0.16.1
 	github.com/libp2p/go-libp2p v0.52.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.12.1
@@ -40,7 +40,6 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bsv-blockchain/aerospike-client-go/v8 v8.7.1-bsv6 // indirect
 	github.com/bsv-blockchain/go-batcher/v2 v2.1.1 // indirect
-	github.com/bsv-blockchain/go-bc v1.2.0 // indirect
 	github.com/bsv-blockchain/go-bt/v2 v2.7.4 // indirect
 	github.com/bsv-blockchain/go-chaincfg v1.7.0 // indirect
 	github.com/bsv-blockchain/go-lockfree-queue v1.2.0 // indirect
